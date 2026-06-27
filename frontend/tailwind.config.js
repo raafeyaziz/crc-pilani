@@ -13,9 +13,24 @@ export default {
       },
       fontFamily: {
         geist: ['"Geist Mono"', 'monospace'],
-      }
+      },
+      keyframes: {
+        blink : {
+          '0%, 49%':{
+            opacity: '1',
+            
+          },
+          '50%, 100%':{
+            opacity: '0',
+            
+          },
+        },
+      },
+      animation: {
+        blink: 'blink 0.75s step-end infinite'
+      },
     },
   },
-  plugins: [],
+  plugins: []
 }
 

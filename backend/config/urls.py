@@ -16,12 +16,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from finance.views import GoogleLogin,get_csrf_token
 urlpatterns = [
     path('admin/', admin.site.urls),
     
     #app urls
     path('api/', include('finance.urls')),
+    
+    #google login
+    path('auth/google/', GoogleLogin.as_view(), name='google_login'),
+    path('auth/csrf/', get_csrf_token, name='csrf'),
     
     #for authentication
     path('auth/', include('dj_rest_auth.urls')), 

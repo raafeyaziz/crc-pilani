@@ -9,9 +9,22 @@ from .serializers import (
     TransactionSerializer, VendorSerializer, PayletSerializer, 
     AnnouncementSerializer, QuerySerializer
 )
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from dj_rest_auth.registration.views import SocialLoginView
+from django.http import JsonResponse
+from django.middleware.csrf import get_token
 
 # Create your views here.
+#sending cookie
+def get_csrf_token(request):
+    return JsonResponse({'message': 'CSRF cookie set', 'csrfToken': get_token(request)})
 
+class GoogleLogin(SocialLoginView):
+    adapter_class = GoogleOAuth2Adapter
+    client_class = OAuth2Client
+    callback_url = "http://localhost:5173"
+    
 class CRCViewSet(viewsets.ModelViewSet):
     queryset = CRC.objects.all()
     serializer_class = CRCSerializer

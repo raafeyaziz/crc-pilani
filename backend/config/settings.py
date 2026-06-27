@@ -29,7 +29,25 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 ADMIN_EMAIL= os.environ.get('ADMIN_EMAIL')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+#for google logins
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173", 
+]
+CORS_ALLOW_CREDENTIALS = True
 
+#something about bank transaction-level security
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+]
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_HTTPONLY = False
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_AGE = 1209600
+#for admin privileges
+REST_AUTH = {
+    'USER_DETAILS_SERIALIZER': 'finance.serializers.CustomUserDetailsSerializer',
+}
 ALLOWED_HOSTS = []
 
 
@@ -77,6 +95,7 @@ ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

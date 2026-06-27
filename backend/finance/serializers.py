@@ -2,6 +2,12 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import CRC, Ledger, Subcategory, Transaction, Vendor, Paylet, Announcement, Query
 
+class CustomUserDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('pk', 'email', 'first_name', 'last_name', 'is_staff')
+        read_only_fields = ('pk', 'email', 'is_staff')
+        
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
