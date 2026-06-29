@@ -15,6 +15,10 @@ from dj_rest_auth.registration.views import SocialLoginView
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.db.models import Sum
+
 # Create your views here.
 #sending cookie
 def get_csrf_token(request):
@@ -31,10 +35,27 @@ class CRCViewSet(viewsets.ModelViewSet):
     permission_classes= [IsCRCUserOrReadOnly]
 
 class LedgerViewSet(viewsets.ModelViewSet):
-    queryset = Ledger.objects.all()
+    queryset = Ledger.objects.all().order_by('-created_at')
     serializer_class = LedgerSerializer
     permission_classes= [IsCRCUserOrReadOnly]
-
+    
+    @action(detail= True, methods=['get'])
+    def summary(self, request, pk=None):
+        ledger= self.get_object()
+        transactions= ledger.transactions.all().order_by('-created_at')
+        total_revenue= transactions.filter(transaction_type__iexact='revenue').aggregate(Sum('amount'))['amount__sum'] or 0
+        total_expense= transactions.filter(transaction_type__iexact='expense').aggregate(Sum('amount'))['amount__sum'] or 0
+        
+        net_balance=total_revenue-total_expense
+        transaction_data= TransactionSerializer(transactions, many=True).data
+        return Response({
+            'ledger_name': ledger.name,
+            'total_revenue': total_revenue,
+            'total_expense': total_expense,
+            'net_balance': net_balance,
+            'transactions': transaction_data
+        })
+        
 class SubcategoryViewSet(viewsets.ModelViewSet):
     queryset = Subcategory.objects.all()
     serializer_class = SubcategorySerializer
