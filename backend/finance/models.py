@@ -39,7 +39,7 @@ class Transaction(models.Model):
                               related_name='transactions')
     
     
-    subCategory= models.ForeignKey(Subcategory,
+    subcategory= models.ForeignKey(Subcategory,
                                    on_delete=models.SET_NULL,
                                    related_name='transactions',
                                    null=True)

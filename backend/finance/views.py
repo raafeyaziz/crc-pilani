@@ -46,6 +46,16 @@ class LedgerViewSet(viewsets.ModelViewSet):
         total_revenue= transactions.filter(transaction_type__iexact='revenue').aggregate(Sum('amount'))['amount__sum'] or 0
         total_expense= transactions.filter(transaction_type__iexact='expense').aggregate(Sum('amount'))['amount__sum'] or 0
         
+        revenue_by_subcategory= transactions.filter(transaction_type__iexact='revenue')\
+        .values('subcategory__name')\
+        .annotate(total=Sum('amount'))\
+        .order_by('subcategory__name')
+            
+        expense_by_subcategory= transactions.filter(transaction_type__iexact='expense')\
+            .values('subcategory__name')\
+            .annotate(total=Sum('amount'))\
+            .order_by('subcategory__name')
+        
         net_balance=total_revenue-total_expense
         transaction_data= TransactionSerializer(transactions, many=True).data
         return Response({
@@ -53,7 +63,9 @@ class LedgerViewSet(viewsets.ModelViewSet):
             'total_revenue': total_revenue,
             'total_expense': total_expense,
             'net_balance': net_balance,
-            'transactions': transaction_data
+            'transactions': transaction_data,
+            'revenue_breakdown': revenue_by_subcategory,
+            'expense_breakdown': expense_by_subcategory
         })
         
 class SubcategoryViewSet(viewsets.ModelViewSet):

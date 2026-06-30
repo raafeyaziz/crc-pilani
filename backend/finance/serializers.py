@@ -40,7 +40,7 @@ class PayletSerializer(serializers.ModelSerializer):
 
 class TransactionSerializer(serializers.ModelSerializer):
     ledger_name = serializers.CharField(source='ledger.name', read_only=True)
-    subcategory_name = serializers.CharField(source='subCategory.name', read_only=True)
+    subcategory_name = serializers.CharField(source='subcategory.name', read_only=True)
     class Meta:
         model = Transaction
         fields = '__all__'

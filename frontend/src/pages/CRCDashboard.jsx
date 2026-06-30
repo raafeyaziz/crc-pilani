@@ -12,6 +12,8 @@ import { formatTransactionDate, formatINR } from '../utils/format.js';
 import TransactionCard from '../components/TransactionCard.jsx';
 import TransactionList from '../components/TransactionList.jsx';
 import LedgerHeader from '../components/LedgerHeader.jsx';
+import AddPayetModal from '../components/AddPayletModal.jsx';
+import ViewLedger from '../components/ViewLedger.jsx';
 const CRCDashboard = () => {
   const { logout } = useContext(AuthContext);
   
@@ -22,6 +24,8 @@ const CRCDashboard = () => {
   const [adding, setAdding] = useState(false);
   const [selectedLedger, setSelectedLedger] = useState(null);
   const [ledgerData, setLedgerData]= useState(null);
+  const [addPaylet, setAddPaylet] = useState(false);
+  const [viewLedger, setViewLedger] = useState(false);
 
   useEffect(() => {
     fetchLedgers();
@@ -88,18 +92,18 @@ const CRCDashboard = () => {
         </div>
       </header>
 {/*main content + nav bar*/}
-      <div className=' px-10 flex w-full justify-between'>
+      <div className=' px-10 md:flex-row flex flex-col items-center md:items-stretch gap-10 w-full justify-center'>
         <nav className='flex w-[225px] flex-col gap-4 items-start'>
           <Button size='small' shape='rectangle' also='w-full h-16 text-xl' onClick={()=>{
             setAdding(true);
-            setNewLedgerName='';
+            setNewLedgerName('');
           }
           }>
       
               <img src={moneyIcon} className='w-[1.5em] h-auto group-hover:invert transition-all duration-200' alt='m'></img>
               add fest
           </Button>
-          <aside className='flex w-full h-full min-h-screen my-1 flex-col gap-0 text-white border-white border'>
+          <aside className='flex w-full md:flex-1 md:min-h-screen my-1 flex-col gap-0 text-white border-white border'>
             <input type='text' placeholder='>terminal█' className='text-black py-1 px-2 placeholder-black selection:text-white selection:bg-black'/>
             <nav>
               {adding && (
@@ -136,7 +140,7 @@ const CRCDashboard = () => {
 
         {/* main ledger data is put here */}
         {selectedLedger && ledgerData &&
-        <main className='pl-10 gap-16 flex flex-col w-full text-white'>
+        <main className=' pb-1 gap-16 flex flex-col w-full text-white'>
           <LedgerHeader ledgerData={ledgerData} />
 
           <div className='flex flex-col w-full gap-10'>
@@ -145,10 +149,10 @@ const CRCDashboard = () => {
                 &gt;all_transactions
               </div>
               <div className='flex gap-4'>
-                <Button size='small' shape='square' also='w-14 h-14 text-xs'>
+                <Button onClick= {()=> setViewLedger(true)} size='small' shape='square' also='w-14 h-14 text-xs'>
                   view ledger
                 </Button>
-                <Button size='small' shape='square' also='w-14 h-14 text-xs'>
+                <Button size='small' shape='square' also='w-14 h-14 text-xs' onClick={()=> setAddPaylet(true)}>
                   <img src={plusIcon} alt='add' className='group-hover:invert'></img>
                 </Button>
 
@@ -157,8 +161,14 @@ const CRCDashboard = () => {
             <TransactionList transactions={ledgerData.transactions}/>
           </div>
         </main>}
-        
+
       </div>
+      {addPaylet && (
+        <AddPayetModal ledger={selectedLedger} onClose={() => setAddPaylet(false)} onSuccess={()=>fetchLedgerData(selectedLedger.id)}/>
+      )}
+      {viewLedger && (
+        <ViewLedger ledgerData={ledgerData} onClose={()=> setViewLedger(false)}/>
+      )}
     </div>
   );
 };

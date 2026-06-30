@@ -1,7 +1,7 @@
 export default function Button({
     size='small',
     shape='square',
-    also,
+    also='',
     children,
     ...props
 }){

@@ -5,7 +5,7 @@ export default function LedgerHeader({ledgerData}){
         <header className='gap-10 flex flex-col w-full text-white'>
     
         <div>
-            <p className={`text-5xl w-full flex items-center justify-center ${
+            <p className={`md:text-5xl  text-4xl w-full flex items-center justify-center ${
             ledgerData.net_balance > 0 ?
             'text-green'
             : ledgerData.net_balance < 0 ?
@@ -23,9 +23,9 @@ export default function LedgerHeader({ledgerData}){
             net balance
             </p>
         </div>
-        <div className='w-full flex items-center'>
+        <div className='w-full gap-4 flex items-center'>
             <div className='flex flex-col w-1/2 justify-center items-start'>
-            <p className='text-green text-4xl flex w-full justify-center'> 
+            <p className='text-green text-3xl md:text-4xl flex w-full justify-center'> 
                 {formatINR(ledgerData.total_revenue).substring(1)}
             </p>
             <p className='text-grey text-m w-full flex items-center justify-center'>
@@ -35,7 +35,7 @@ export default function LedgerHeader({ledgerData}){
             </div>
 
             <div className='flex flex-col w-1/2 justify-center items-center'>
-            <p className='text-red text-4xl flex justify-center'> 
+            <p className='text-red text-3xl md:text-4xl flex justify-center'> 
                 {formatINR(ledgerData.total_expense).substring(1)}
             </p>
             <p className='text-grey text-m w-full flex items-center justify-center'>

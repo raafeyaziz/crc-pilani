@@ -4,7 +4,7 @@ import Login from './pages/Login';
 import ProtectedRoute from './components/ProtectedRoute';
 import CRCDashboard from './pages/CRCDashboard';
 import StudentDashboard from './pages/StudentDashboard';
-
+import Config from './pages/Config';
 function App() {
   return (
     <Router>
@@ -28,6 +28,15 @@ function App() {
             element={
               <ProtectedRoute requireAdmin={true}>
                 <CRCDashboard />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/config" 
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <Config />
               </ProtectedRoute>
             } 
           />
