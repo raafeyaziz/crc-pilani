@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     CRCViewSet, LedgerViewSet, SubcategoryViewSet, 
     TransactionViewSet, VendorViewSet, PayletViewSet, 
-    AnnouncementViewSet, QueryViewSet
+    AnnouncementViewSet, QueryViewSet, PayletTemplateUploadView
 )
 router = DefaultRouter()
 
@@ -17,5 +17,7 @@ router.register(r'announcements', AnnouncementViewSet)
 router.register(r'queries', QueryViewSet)
 
 urlpatterns = [
+    path('upload-template/', PayletTemplateUploadView.as_view(), name='upload_template'),
     path('', include(router.urls)),
+    
 ]

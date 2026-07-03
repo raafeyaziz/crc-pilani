@@ -66,9 +66,9 @@ class Vendor(models.Model):
         return self.name
 #6
 class Paylet(models.Model):
-    transaction = models.OneToOneField(Transaction,
+    transaction = models.ForeignKey(Transaction,
                                        on_delete=models.CASCADE,
-                                       related_name='paylet')
+                                       related_name='paylets')
     
     payee_name = models.CharField(max_length=255)
     reason_for = models.CharField(max_length=255) 
@@ -121,3 +121,11 @@ class Query(models.Model):
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_resolved = models.BooleanField(default=False)
+    
+#9
+class PayletTemplate(models.Model):
+    file=models.FileField(upload_to='paylet_templates/')
+    uploaded_at=models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Active Template (Uploaded: {self.uploaded_at.strftime('%d %b %Y')})"

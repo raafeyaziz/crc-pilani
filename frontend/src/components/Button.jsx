@@ -10,12 +10,12 @@ export default function Button({
         big: 'group flex justify-center items-center bg-black text-3xl text-white  hover:bg-white hover:text-black border-t-[3px] border-l-[3px] border-b-[10px] border-r-[10px] border-white transition-all duration-200 cursor-pointer',
     };
     const shapes= {
-        square: 'px-3.5 py-3.5',
+        square: 'px-3 py-3 md:px-3.5 md:py-3.5 h-12 w-12 md:h-14 md:w-14',
         
         rectangle: 'gap-4 px-5 py-4'
     };
 
-    const className= `${sizes[size]} ${shapes[shape]} ${also}`;
+    const className= `${sizes[size]} ${shapes[shape]}`;
     return (
         <button className={className} {...props}>
             {children}

@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext, api } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom'; 
 
 import Button from '../components/Button.jsx';
 import Input from '../components/Input.jsx';
@@ -14,6 +15,8 @@ import TransactionList from '../components/TransactionList.jsx';
 import LedgerHeader from '../components/LedgerHeader.jsx';
 import AddPayetModal from '../components/AddPayletModal.jsx';
 import ViewLedger from '../components/ViewLedger.jsx';
+import PayletModal from '../components/PayletModal.jsx';
+
 const CRCDashboard = () => {
   const { logout } = useContext(AuthContext);
   
@@ -26,11 +29,19 @@ const CRCDashboard = () => {
   const [ledgerData, setLedgerData]= useState(null);
   const [addPaylet, setAddPaylet] = useState(false);
   const [viewLedger, setViewLedger] = useState(false);
+  const [getPaylet, setGetPaylet] = useState(false);
+  const [transaction, setTransaction]= useState(null);
+
+  const navigate= useNavigate();
 
   useEffect(() => {
     fetchLedgers();
   }, []);
   
+  const handleGetPaylet= (transaction) =>{
+    setTransaction(transaction);
+    setGetPaylet(true);
+  }
   function handleBlur(){
     if (newLedgerName.trim()=='') setAdding(false);
   };
@@ -73,15 +84,15 @@ const CRCDashboard = () => {
 
   return (
     // True Black Background from SVG
-    <div className="min-h-screen w-full min-w-max bg-black text-white font-geist font-normal flex flex-col gap-2 relative selection:bg-white selection:text-black">
-      <header className="w-full">
-        <div className="px-10 py-5 w-full mx-auto flex items-center justify-between">
-          <div className="text-3xl tracking-wide flex whitespace-nowrap z-10">
+    <div className="md:px-10 px-5 min-h-screen  bg-black text-white font-geist font-normal flex flex-col gap-2 relative selection:bg-white selection:text-black">
+      <header className="">
+        <div className="py-5  mx-auto flex items-center justify-between">
+          <div className="text-2xl items-center md:text-3xl tracking-wide flex whitespace-nowrap z-10">
             &gt;crc.pilani 
           <span className="inline-block w-[0.5em] h-[1em] bg-white ml-1"></span>
           </div>
           <div className='flex gap-4'>
-            <Button also='w-14 h-14'>
+            <Button also='w-14 h-14' onClick={()=>navigate('/config')}>
             <img src={configureIcon} className='group-hover:invert' alt='.config'/>
             </Button>
             <Button also='w-14 h-14' onClick={logout}>
@@ -92,9 +103,9 @@ const CRCDashboard = () => {
         </div>
       </header>
 {/*main content + nav bar*/}
-      <div className=' px-10 md:flex-row flex flex-col items-center md:items-stretch gap-10 w-full justify-center'>
-        <nav className='flex w-[225px] flex-col gap-4 items-start'>
-          <Button size='small' shape='rectangle' also='w-full h-16 text-xl' onClick={()=>{
+      <div className='  md:flex-row flex flex-col items-center md:items-stretch gap-10 w-full justify-center'>
+        <nav className='flex  flex-col gap-4'>
+          <Button size='small' shape='rectangle' also='h-16 text-xl' onClick={()=>{
             setAdding(true);
             setNewLedgerName('');
           }
@@ -145,11 +156,11 @@ const CRCDashboard = () => {
 
           <div className='flex flex-col w-full gap-10'>
             <div className='flex justify-between items-center w-full'>
-              <div className='text-3xl'>
+              <div className='text-2xl md:text-3xl truncate'>
                 &gt;all_transactions
               </div>
-              <div className='flex gap-4'>
-                <Button onClick= {()=> setViewLedger(true)} size='small' shape='square' also='w-14 h-14 text-xs'>
+              <div className='flex gap-4 text-[0.5rem] md:text-xs'>
+                <Button onClick= {()=> setViewLedger(true)} size='small' shape='square'>
                   view ledger
                 </Button>
                 <Button size='small' shape='square' also='w-14 h-14 text-xs' onClick={()=> setAddPaylet(true)}>
@@ -158,7 +169,7 @@ const CRCDashboard = () => {
 
               </div>
             </div>
-            <TransactionList transactions={ledgerData.transactions}/>
+            <TransactionList transactions={ledgerData.transactions} handleGetPaylet={handleGetPaylet}/>
           </div>
         </main>}
 
@@ -168,6 +179,10 @@ const CRCDashboard = () => {
       )}
       {viewLedger && (
         <ViewLedger ledgerData={ledgerData} onClose={()=> setViewLedger(false)}/>
+      )}
+
+      {getPaylet && (
+        <PayletModal transaction={transaction} onClose={()=> setGetPaylet(false)}/>
       )}
     </div>
   );

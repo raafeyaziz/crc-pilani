@@ -194,3 +194,7 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 LOGIN_REDIRECT_URL = '/'
+
+#for image data
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

@@ -1,9 +1,12 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser
+
 from django.conf import settings
 from .permissions import IsCRC, IsCRCUserOrReadOnly, IsQueryOwnerOrCRC
-from .models import CRC, Ledger, Subcategory, Transaction, Vendor, Paylet, Announcement, Query
+from .models import CRC, Ledger, Subcategory, Transaction, Vendor, Paylet, Announcement, Query, PayletTemplate
 from .serializers import (
     CRCSerializer, LedgerSerializer, SubcategorySerializer, 
     TransactionSerializer, VendorSerializer, PayletSerializer, 
@@ -107,3 +110,30 @@ class QueryViewSet(viewsets.ModelViewSet):
         
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+class PayletTemplateUploadView(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+    
+    def get(self, request, *args, **kwargs):
+        template = PayletTemplate.objects.first()
+        if template:
+            return Response({
+                "exists": True,
+                "uploaded_at": template.uploaded_at.strftime('%d %b %Y')
+            }, status=200)
+        return Response({"exists": False}, status=200)
+
+    def post(self, request, *args, **kwargs):
+        file_obj = request.FILES.get('file')
+        if not file_obj:
+            return Response({"error": "No file provided."}, status=400)
+
+        old_templates = PayletTemplate.objects.all()
+        for template in old_templates:
+            if template.file:
+                template.file.delete(save=False) 
+            template.delete() 
+
+        PayletTemplate.objects.create(file=file_obj)
+
+        return Response({"message": "Template successfully updated!"}, status=201)

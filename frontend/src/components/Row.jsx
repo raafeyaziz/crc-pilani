@@ -3,7 +3,7 @@ export default function Row({
     children,
     ...props
 }){
-    const spec= `flex  ${className}`;
+    const spec= `flex ${className} md:flex-row`;
     return(
         <div className={spec} {...props}>
             {children}
