@@ -10,7 +10,7 @@ import { AuthContext, api } from '../context/AuthContext';
 import { useEffect, useState } from "react";
 
 export default function CommitteeSection({
-    
+    isAdmin=false
 }) {
     const [members, setMembers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -42,7 +42,7 @@ export default function CommitteeSection({
                 <h1 className="text-2xl md:text-3xl text-white">
                     &gt;the_committee
                 </h1>
-
+                {isAdmin &&
                 <Button
                     onClick={()=>{
                         setEdit(true);
@@ -53,7 +53,7 @@ export default function CommitteeSection({
                     also='w-14 h-14'
                 >
                     <img src={plusIcon} alt='add' className="group-hover:invert"></img>
-                </Button>
+                </Button>}
 
             </div>
 
@@ -65,7 +65,7 @@ export default function CommitteeSection({
                     <AboutCard
                         key={member.id}
                         member={member}
-                        isAdmin={true}
+                        isAdmin={isAdmin}
                         onDeleteSuccess= {fetchCommittee}
                         onEdit= {()=>{
                             setSelectedMember(member)

@@ -46,7 +46,7 @@ export default function AddAnnouncementModal({
                         &gt;add-announcement
                     </div>
             
-                    <button className="bg-black h-full w-auto px-1 py-1 cursor-pointer" onClick={onClose}>
+                    <button className="bg-black hover:bg-red h-full w-auto px-1 py-1 cursor-pointer" onClick={onClose}>
                         <img src={crossIcon} alt='close' className="h-[1em] w-auto"/>
                     </button>
                  </Row>

@@ -3,30 +3,19 @@ import Row from "./Row";
 import Column from "./Column";
 import { formatINR } from "../utils/format";
 import crossIcon from "../assets/cross.svg";
-
+import Modal from "./Modal";
 
 export default function ViewLedger({
 ledgerData,
 onClose
 }){
     return(
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8">
-        <Column className="text-s pb-10 max-h-[calc(100dvh-2rem)] overflow-hidden gap-10 bg-black text-white border border-white">
-            <Row className='border border-white justify-between bg-white text-black text-xl md:text-2xl' >
-                <div className="selection:bg-black selection:text-white">
-                &gt;{ledgerData.ledger_name}
-                </div>
-            
-                <button className="bg-black h-full w-auto px-1 py-1" onClick={onClose}>
-                    <img src={crossIcon} alt='close' className="h-[1em] w-auto"/>
-                </button>
-            </Row>
-            
-            <main className='overflow-y-auto'>
-                <header className='gap-10 pb-10 flex flex-col w-full text-white'>
+        <Modal title={ledgerData.ledger_name} onClose={onClose}>
+            <main className='overflow-y-auto  flex flex-col items-center'>
+                <header className='md:gap-6 gap-4 pb-10 flex flex-col w-full text-white'>
         
                     <div>
-                        <p className={`text-3xl md:text-4xl  w-full flex items-center justify-center ${
+                        <p className={`text-3xl md:text-4xl w-full flex items-center justify-center ${
                         ledgerData.net_balance > 0 ?
                         'text-green'
                         : ledgerData.net_balance < 0 ?
@@ -44,23 +33,28 @@ onClose
                         net balance
                         </p>
                     </div>
-                    <div className='w-full md:gap-20 gap-4 px-4 md:px-20 flex items-center'>
+                    <div className="flex items-center gap-3 text-xl justify-center text-grey">
+                        <hr className='border-t w-1/4 border-grey'/>
+                        <span>=</span>
+                        <hr className='w-1/4 border-t border-grey'/>
+                    </div>
+                    <div className='w-full md:gap-20 gap-4 px-4 md:px-20 flex flex-col md:flex-row items-center'>
                         <div className='flex flex-col w-1/2 justify-center items-start'>
                         <p className='text-green text-2xl md:text-3xl flex w-full justify-center'> 
-                            {formatINR(ledgerData.total_revenue).substring(1)}
+                            +{formatINR(ledgerData.total_revenue).substring(1)}
                         </p>
                         <p className='text-grey text-xs md:text-sm w-full flex items-center justify-center'>
-                        (+) debit
+                        revenue
                         </p>
                         
                         </div>
 
                         <div className='flex flex-col w-1/2 justify-center items-center'>
                         <p className='text-red text-2xl md:text-3xl flex justify-center'> 
-                            {formatINR(ledgerData.total_expense).substring(1)}
+                            -{formatINR(ledgerData.total_expense).substring(1)}
                         </p>
                         <p className='text-grey text-xs md:text-sm w-full flex items-center justify-center'>
-                        (-) credit
+                        expense
                         </p>
                         
                         </div>
@@ -81,7 +75,7 @@ onClose
                             ))}
                         </div>
                     </Column>
-                    <Column className='w-full px-2'>
+                    <Column className='w-full pb-2 px-2'>
                         <div className="flex items-center gap-1 px-1 w-full text-sm md:text-base bg-white text-black selection:bg-black selection:text-white">
                             &gt;expense <div className="bg-black w-[0.75em] h-[1.25em]"/>
                         </div>
@@ -96,8 +90,6 @@ onClose
                     </Column>
                 </div>
             </main>
-            
-        </Column>
-        </div>
+        </Modal>
     );
 }

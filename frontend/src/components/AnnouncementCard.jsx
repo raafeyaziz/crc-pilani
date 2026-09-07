@@ -1,15 +1,27 @@
 import { formatTransactionDate } from "../utils/format";
 import { useState } from 'react';
 import { api } from '../context/AuthContext';
-
-export default function AnnouncementCard({ announcement, onDeleteSuccess = '' }) {
+import ReactMarkdown from "react-markdown";
+import Confirm from "./Confirm";
+export default function AnnouncementCard({ announcement, isAdmin, onDeleteSuccess = '' }) {
     const [isDeleting, setIsDeleting] = useState(false);
-    // 1. New state to track if the card is expanded or clamped
+    const [confirming, setConfirming] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false); 
     
-    const handleDelete = async () => {
-        const confirmed = window.confirm("are you sure?");
-        if (!confirmed) return;
+
+    const onConfirm = async () => {
+        setConfirming(false);
+        await handleConfirmed();
+    }
+    const onClose = async () => {
+        setConfirming(false);
+    }
+
+    const handleDelete= async () =>{
+        setConfirming(true);
+    }
+    const handleConfirmed = async () => {
+        
         setIsDeleting(true);
         try {
             await api.delete(`/api/announcements/${announcement.id}/`);
@@ -36,13 +48,15 @@ export default function AnnouncementCard({ announcement, onDeleteSuccess = '' })
                 </div>
                 
                 <div className='flex-shrink-0 flex flex-col items-end gap-2'>
+
+                    {isAdmin &&
                     <button 
                         className={`text-xs ${isDeleting ? 'text-zinc-500 cursor-not-allowed' : 'text-white hover:text-red-500'}`} 
                         disabled={isDeleting}
                         onClick={handleDelete}
                     >
                         <u>delete</u>
-                    </button>
+                    </button>}
                     
                    
                     <button 
@@ -61,8 +75,51 @@ export default function AnnouncementCard({ announcement, onDeleteSuccess = '' })
                     : "h-[3.75rem] line-clamp-3 overflow-hidden" 
                 }`}
             >
-                {announcement.body}
+                <ReactMarkdown
+                components={{
+                    a: ({ href, children }) => (
+                    <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                        color: "#2563eb",
+                        textDecoration: "underline",
+                        cursor: "pointer",
+                        }}
+                    >
+                        {children}
+                    </a>
+                    ),
+
+                    strong: ({ children }) => (
+                    <strong
+                        style={{
+                        fontWeight: 700,
+                        }}
+                    >
+                        {children}
+                    </strong>
+                    ),
+
+                    em: ({ children }) => (
+                    <em
+                        style={{
+                        fontStyle: "italic",
+                        }}
+                    >
+                        {children}
+                    </em>
+                    ),
+                }}
+                >
+                    {announcement.body}
+                </ReactMarkdown>
+                
             </div>
+
+            {confirming &&
+            <Confirm onConfirm= {onConfirm} onClose={onClose}/>}
 
         </div>
     );

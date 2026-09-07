@@ -42,6 +42,8 @@ export default function AboutCard({ member,isAdmin=false, onDeleteSuccess=false,
             flex-col
             md:flex-row
             gap-1
+            m-10
+            md:m-0
             "
         >
 

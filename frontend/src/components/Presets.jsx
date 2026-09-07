@@ -35,6 +35,7 @@ export default function Presets({}){
             })
             setUploading(false);
             fetchTemplate();
+            setTemplate(null);
         } catch(e){
             console.error('Could not save: ', e);
         }
@@ -69,6 +70,7 @@ export default function Presets({}){
                 </div>
             </div>
             <div className='flex w-full justify-end'>
+                    
                     <button 
                         disabled={postDisabled} 
                         onClick={handlePost} 

@@ -9,6 +9,7 @@ import Button from '../components/Button.jsx';
 import Announcements from '../components/Announcements.jsx';
 import About from '../components/About.jsx';
 import Presets from '../components/Presets.jsx';
+import PublishLedgers from '../components/PublishLedgers.jsx';
 
 export default function Config({}){
     const navigate= useNavigate();
@@ -16,9 +17,10 @@ export default function Config({}){
     const [page, setPage]= useState('announcements');
 
     const section = {
-        announcements: <Announcements />,
-        crc: <About />,
-        presets: <Presets />
+        announcements: <Announcements isAdmin={true}/>,
+        crc: <About isAdmin={true}/>,
+        presets: <Presets />,
+        publish: <PublishLedgers />
     }
 
     return(
@@ -78,6 +80,17 @@ export default function Config({}){
             
                         }`}>
                             presets
+                        </button>
+
+                        <button 
+                        onClick={()=>setPage('publish')}
+                        className={`px-2 py-1 border-white border w-full flex items-start hover:text-black hover:bg-white ${
+                            page=='publish'
+                            ? 'bg-white text-black'
+                            : 'bg-black text-white'
+            
+                        }`}>
+                            publish-ledgers
                         </button>
 
                         <button 

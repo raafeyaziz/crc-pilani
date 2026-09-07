@@ -5,6 +5,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import CRCDashboard from './pages/CRCDashboard';
 import StudentDashboard from './pages/StudentDashboard';
 import Config from './pages/Config';
+import MainMenu from './pages/MainMenu';
+
 function App() {
   return (
     <Router>
@@ -12,7 +14,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
 
-          {/* REGULAR STUDENT ROUTE */}
+          
           <Route 
             path="/student-dashboard" 
             element={
@@ -22,7 +24,7 @@ function App() {
             } 
           />
 
-          {/* STRICT CRC ADMIN ROUTE */}
+          
           <Route 
             path="/crc-dashboard" 
             element={
@@ -37,6 +39,15 @@ function App() {
             element={
               <ProtectedRoute requireAdmin={true}>
                 <Config />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/main-menu" 
+            element={
+              <ProtectedRoute>
+                <MainMenu />
               </ProtectedRoute>
             } 
           />

@@ -4,6 +4,7 @@ import { api } from '../context/AuthContext';
 
 import Row from "./Row";
 import Column from "./Column";
+import Modal from './Modal';
 import InputBox from "./InputBox";
 import crossIcon from "../assets/cross.svg";
 import Button from './Button';
@@ -13,7 +14,7 @@ onClose,
 onSuccess
 }){
     const [title, setTitle]= useState('');
-    const [amount, setAmount]= useState(null);
+    const [amount, setAmount]= useState('');
     const [type, setType]= useState('expense');
     const [subcategory, setSubcategory]= useState('');
     const [subcategoryOptions, setSubcategoryOptions]= useState([]);
@@ -80,86 +81,75 @@ onSuccess
     };
 
     return(
-        <div className='fixed inset-0 text-sm md:text-base z-50 flex items-center justify-center p-4 md:p-8'>
-        <Column className="text-s pb-4 gap-4 bg-black text-white border border-white z-50">
-        <Row className='border border-white justify-between bg-white text-black text-2xl' >
-            <div className="selection:bg-black selection:text-white">
-                &gt;add-transaction
+        <Modal title='add-transaction' onClose={onClose}>
+            <header className="text-grey text-sm md:text-base flex items-center justify-center">
+                //{ledger.name}
+            </header>
+            <div className="flex flex-col font-mono md:flex-row w-full px-10 md:gap-4">
+                <p className='w-1/6'>&gt;title</p>
+                <div className="flex flex-1">
+                    <InputBox disabled={inputDisabled} type="text"
+                    value={title}
+                    onChange={(e)=> setTitle(e.target.value)}/>
+                </div>
+                
             </div>
-            
-                <button className="bg-black h-full w-auto px-1 py-1" onClick={onClose}>
-                    <img src={crossIcon} alt='close' className="h-[1em] w-auto"/>
-                </button>
-        </Row>
-        <header className="text-grey text-sm md:text-base flex items-center justify-center">
-            //{ledger.name}
-        </header>
-        <div className="flex flex-col font-mono md:flex-row w-full px-10 md:gap-4">
-            <p className='w-1/6'>&gt;title</p>
-            <div className="flex flex-1">
-                <InputBox disabled={inputDisabled} type="text"
-                value={title}
-                onChange={(e)=> setTitle(e.target.value)}/>
-            </div>
-            
-        </div>
-        <div className="flex flex-col md:flex-row w-full px-10 md:gap-4 ">
-            <p className='w-1/6'>&gt;amt</p>
-            <div className="flex flex-col md:flex-row flex-1 gap-2 md:gap-4">
-                <InputBox disabled={inputDisabled} type="number" 
-                value= {amount}
-                onChange= {(e)=>setAmount(e.target.value)}/>
-                <div className='flex gap-4'>
-                <button disabled={inputDisabled} onClick= {()=>setType("revenue")} className={`border hover:bg-green hover:text-white flex items-center px-5 py-2 border-white text-xs ${type=='revenue'? 'bg-green text-white' : 'bg-black text-white'}`}>revenue</button>
-                <button disabled={inputDisabled} onClick= {()=>setType("expense")} className={`border hover:bg-red hover:text-white flex items-center px-5 py-2 border-white text-xs ${type=='expense'? 'bg-red text-white' : 'bg-black text-white'}`}>expense</button>
+            <div className="flex flex-col md:flex-row w-full px-10 md:gap-4 ">
+                <p className='w-1/6'>&gt;amt</p>
+                <div className="flex flex-col md:flex-row flex-1 gap-2 md:gap-4">
+                    <InputBox disabled={inputDisabled} type="number" 
+                    value= {amount}
+                    onChange= {(e)=>setAmount(e.target.value)}/>
+                    <div className='flex gap-4'>
+                    <button disabled={inputDisabled} onClick= {()=>setType("revenue")} className={`border hover:bg-green hover:text-white flex items-center px-5 py-2 border-white text-xs ${type=='revenue'? 'bg-green text-white' : 'bg-black text-white'}`}>revenue</button>
+                    <button disabled={inputDisabled} onClick= {()=>setType("expense")} className={`border hover:bg-red hover:text-white flex items-center px-5 py-2 border-white text-xs ${type=='expense'? 'bg-red text-white' : 'bg-black text-white'}`}>expense</button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div className="flex flex-col md:flex-row w-full px-10 md:gap-4">
-            <p className='w-1/6'>&gt;cat</p>
-            <div className="flex flex-1 gap-4">
-                <CreatableSelect className='flex-1'
-                disabled={inputDisabled}
-                isClearable
-                isDisabled={isLoading}
-                isLoading= {isLoading}
-                options= {subcategoryOptions}
-                value= {subcategory}
-                formatOptionLabel={(option)=> `>${option.label}`}
-                onChange={(newValue)=>setSubcategory(newValue)}
-                onCreateOption={handleCreateSubcategory}
-                placeholder='search'
-                unstyled={true}
-                classNames={{
-                    control: (state) => 
-                    `border px-4 py-1 border-white text-m font-mono rounded-none bg-black cursor-text ${
-                        state.isFocused ? 'shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : ''
-                    }`,
-                    menu: () => 
-                    "border border-white text-xs rounded-none font-mono bg-black mt-1 cursor-text",
-                    singleValue: ()=> 'text-white',
-                    placeholder: ()=> "text-grey",
-                    indicatorSeparator: ()=> "bg-grey  mx-2 my-1",
-                    option: (state) => 
-                    `border-white border cursor-pointer px-4 py-2 ${
-                        state.isSelected 
-                        ? 'bg-white text-black' 
-                        : state.isFocused 
+            <div className="flex flex-col md:flex-row w-full px-10 md:gap-4">
+                <p className='w-1/6'>&gt;cat</p>
+                <div className="flex flex-1 gap-4">
+                    <CreatableSelect className='flex-1'
+                    disabled={inputDisabled}
+                    isClearable
+                    isDisabled={isLoading}
+                    isLoading= {isLoading}
+                    options= {subcategoryOptions}
+                    value= {subcategory}
+                    formatOptionLabel={(option)=> `>${option.label}`}
+                    onChange={(newValue)=>setSubcategory(newValue)}
+                    onCreateOption={handleCreateSubcategory}
+                    placeholder='search'
+                    unstyled={true}
+                    classNames={{
+                        control: (state) => 
+                        `border px-4 py-1 border-white text-m font-mono rounded-none bg-black cursor-text ${
+                            state.isFocused ? 'shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : ''
+                        }`,
+                        menu: () => 
+                        "border border-white text-xs rounded-none font-mono bg-black mt-1 cursor-text",
+                        singleValue: ()=> 'text-white',
+                        placeholder: ()=> "text-grey",
+                        indicatorSeparator: ()=> "bg-grey  mx-2 my-1",
+                        option: (state) => 
+                        `border-white border cursor-pointer px-4 py-2 ${
+                            state.isSelected 
                             ? 'bg-white text-black' 
-                            : 'bg-black text-white'
-                    }`
-                }} />
-            
+                            : state.isFocused 
+                                ? 'bg-white text-black' 
+                                : 'bg-black text-white'
+                        }`
+                    }} />
+                
+                </div>
             </div>
-        </div>
-        <Row className='px-10 py-1 justify-end'>
-            <button disabled={postDisabled} onClick= {handlePost} className={`px-6 py-2 group flex justify-center items-center bg-black ${postDisabled ? 'text-grey border-grey' : 'border-white  text-white hover:text-black hover:bg-white cursor-pointer'} transition-all duration-200 border-t-[2px] border-l-[2px] border-r-[6px] border-b-[6px] `}>
-                Post
-            </button>
-        </Row>
-        </Column>
-        </div>
+            <Row className='px-10 py-1 justify-end'>
+                <button disabled={postDisabled} onClick= {handlePost} className={`px-6 py-2 group flex justify-center items-center bg-black ${postDisabled ? 'text-grey border-grey' : 'border-white  text-white hover:text-black hover:bg-white cursor-pointer'} transition-all duration-200 border-t-[2px] border-l-[2px] border-r-[6px] border-b-[6px] `}>
+                    Post
+                </button>
+            </Row>
+        </Modal>
         
     )
 }

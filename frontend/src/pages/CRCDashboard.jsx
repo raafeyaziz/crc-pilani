@@ -31,13 +31,27 @@ const CRCDashboard = () => {
   const [viewLedger, setViewLedger] = useState(false);
   const [getPaylet, setGetPaylet] = useState(false);
   const [transaction, setTransaction]= useState(null);
-
+  const [search, setSearch]= useState("");
+  const [debouncedSearch, setDebouncedSearch]= useState("");
   const navigate= useNavigate();
 
   useEffect(() => {
     fetchLedgers();
   }, []);
   
+  //this implements a 300ms delay before API is called
+  useEffect(()=>{
+    const timer= setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  useEffect(() => {
+    if (!selectedLedger) return;
+    fetchLedgerData(selectedLedger.id);
+  }, [selectedLedger, debouncedSearch]);
+
   const handleGetPaylet= (transaction) =>{
     setTransaction(transaction);
     setGetPaylet(true);
@@ -48,7 +62,15 @@ const CRCDashboard = () => {
 
   const fetchLedgerData = async (ledgerId) =>{
     try{
-      const res= await api.get(`/api/ledgers/${ledgerId}/summary/`);
+      const params= new URLSearchParams();
+      if (debouncedSearch.trim()){
+        params.append("search", debouncedSearch.trim());
+      }
+      const url= 
+      `/api/ledgers/${ledgerId}/summary/`+
+      (params.toString() ?  `?${params.toString()}` : "");
+
+      const res= await api.get(url);
       setLedgerData(res.data);
     } catch (error) {
       console.error("Failed to fetch ledger data", error);
@@ -133,6 +155,8 @@ const CRCDashboard = () => {
                 <button 
                 onClick={()=> {
                   setSelectedLedger(ledger)
+                  setSearch("");
+                  setDebouncedSearch("");
                   fetchLedgerData(ledger.id);
                 
                 }}
@@ -156,9 +180,14 @@ const CRCDashboard = () => {
 
           <div className='flex flex-col w-full gap-10'>
             <div className='flex justify-between items-center w-full'>
-              <div className='text-2xl md:text-3xl truncate'>
-                &gt;all_transactions
-              </div>
+              <input 
+              type='search'
+              value={search}
+              placeholder='&gt;all_transactions'
+              onChange={(e) => setSearch(e.target.value)}
+              className='text-2xl md:text-3xl truncate bg-black'>
+                
+              </input>
               <div className='flex gap-4 text-[0.5rem] md:text-xs'>
                 <Button onClick= {()=> setViewLedger(true)} size='small' shape='square'>
                   view ledger
@@ -169,7 +198,11 @@ const CRCDashboard = () => {
 
               </div>
             </div>
-            <TransactionList transactions={ledgerData.transactions} handleGetPaylet={handleGetPaylet}/>
+            {ledgerData.transactions[0] ?
+            <TransactionList transactions={ledgerData.transactions} handleGetPaylet={handleGetPaylet}
+            onDeleteSuccess={()=>fetchLedgerData(selectedLedger.id)}/>:
+            <p className='text-grey text-sm font-mono'>//you're seeing the zero transactions you added</p>
+            }
           </div>
         </main>}
 

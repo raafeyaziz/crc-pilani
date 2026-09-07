@@ -9,6 +9,29 @@
   }
 }
 
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px; /* For horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track {
+  background: black;
+  border-left: 2px solid black;
+  border-top: 2px solid black;
+  
+}
+
+::-webkit-scrollbar-thumb {
+  background: white;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: white; /* Tailwind zinc-700 */
+}
+
+
+* 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
