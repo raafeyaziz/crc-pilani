@@ -28,16 +28,30 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 #added this 'admin' email here in case crc is no longer admin (unlikely)
 ADMIN_EMAIL= os.environ.get('ADMIN_EMAIL')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "FALSE").upper() == "TRUE"
 #for google logins
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173", 
+    origin.strip()
+    for origin in os.environ.get(
+        "CORS_ALLOWED_ORIGINS",
+        "http://localhost:5173"
+    ).split(",")
+    if origin.strip()
 ]
+
 CORS_ALLOW_CREDENTIALS = True
 
-#something about bank transaction-level security
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
+    origin.strip()
+    for origin in os.environ.get(
+        "CSRF_TRUSTED_ORIGINS",
+        "http://localhost:5173"
+    ).split(",")
+    if origin.strip()
 ]
 CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SAMESITE = 'Lax'
@@ -48,7 +62,14 @@ SESSION_COOKIE_AGE = 1209600
 REST_AUTH = {
     'USER_DETAILS_SERIALIZER': 'finance.serializers.CustomUserDetailsSerializer',
 }
-ALLOWED_HOSTS = ["localhost"]
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get(
+        "ALLOWED_HOSTS",
+        "localhost"
+    ).split(",")
+    if host.strip()
+]
 
 
 # Application definition
@@ -175,7 +196,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -200,3 +221,12 @@ LOGIN_REDIRECT_URL = '/'
 #for image data
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
