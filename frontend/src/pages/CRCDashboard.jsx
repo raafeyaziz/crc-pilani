@@ -185,14 +185,14 @@ const CRCDashboard = () => {
               value={search}
               placeholder='&gt;all_transactions'
               onChange={(e) => setSearch(e.target.value)}
-              className='text-2xl md:text-3xl truncate bg-black'>
+              className='text-xl md:text-2xl truncate bg-black'>
                 
               </input>
               <div className='flex gap-4 text-[0.5rem] md:text-xs'>
                 <Button onClick= {()=> setViewLedger(true)} size='small' shape='square'>
                   view ledger
                 </Button>
-                <Button size='small' shape='square' also='w-14 h-14 text-xs' onClick={()=> setAddPaylet(true)}>
+                <Button size='small' shape='square' onClick={()=> setAddPaylet(true)}>
                   <img src={plusIcon} alt='add' className='group-hover:invert'></img>
                 </Button>
 

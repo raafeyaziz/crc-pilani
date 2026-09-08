@@ -7,7 +7,7 @@ import Button from '../components/Button.jsx'
 import googleIcon from '../assets/google_icon.svg';
 import loginIcon from '../assets/login.svg';
 import dollarBg from '../assets/dollar_sign.svg';
-import bg from '../assets/bg.svg';
+import bg from '../assets/bg.webp';
 import helpIcon from "../assets/help.svg";
 
 const Login = () => {
@@ -107,7 +107,7 @@ const Login = () => {
       </header>
       <div className='flex flex-1 items-center justify-start md:overflow-hidden md:flex-row flex-col gap-4'>
         <div className='flex md:w-1/2 justify-center items-center'>
-          <img src={bg} alt='cool-image' className=' hover:grayscale flex'></img>
+          <img src={bg} alt='cool-image' decoding='async' className=' hover:grayscale flex'></img>
         </div>
         <div className='flex-1 flex justify-center'>
         <div className='flex flex-col gap-4 w-fit justify-start md:items-center md:justify-center'>
