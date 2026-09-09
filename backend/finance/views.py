@@ -31,6 +31,10 @@ from django.http import HttpResponse
 import os
 import tempfile
 
+import logging
+import traceback
+logger= logging.getLogger(__name__)
+
 # Create your views here.
 
 #sending cookie
@@ -138,110 +142,123 @@ class TransactionViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'])
     def generate_paylet(self, request, pk=None):
-        transaction= self.get_object()
-        data= request.data
-        format_type= request.query_params.get('file_ext', 'docx')
-        
-        template= PayletTemplate.objects.first()
-        if not template:
-            return Response({'error':'no paylet template added. rookie move'}, status=404)
-        
-        template_path=template.file.path
-        
-        is_advance= transaction.subcategory.name.lower() == 'advance'
-        addressee= 'Dean, Administration' if is_advance else 'Associate Dean, SWD'
-        date= timezone.now().strftime("%B %d, %Y")
-        
-        ledger_name= ' '.join(transaction.ledger.name.split('-'))
-        if ledger_name.lower().startswith('apogee'):
-            ledger_name=ledger_name.upper()
-        elif ledger_name.startswith('su'):
-            ledger_name= 'SU'
-        else:
-            ledger_name=ledger_name.capitalize()
-        
-        team=ledger_name.split()[0]
-        if (team=='SU'):
-            team="Students' Union"
-        else:
-            team='Team '+team
-        
-        
-        context={
-            'addressee': addressee,
-            'date': date,
-            'team': team,
-            'payee_name': data.get('payee',''),
-            'reason': data.get('reason', ''),
-            'amount': f"Rs. {transaction.amount:,.2f}",
-            'ledger_name': ledger_name,
-            'acc_name': data.get('accName', ''),
-            'acc_number': data.get('accNo', ''),
-            'bank': data.get('bank', ''),
-            'ifsc': data.get('ifsc', ''),
-            'pan': data.get('pan', ''),
-            'gstin': data.get('gstin', '')
-        }
-        if (transaction.transaction_type.lower()=='revenue' or transaction.subcategory.name.lower()=='prize money'):
-            subject= context['reason']
-            body=subject
-        else:
-            subject=f'payment to {context['payee_name']} for {context['reason']}'
-            body= 'processing of a '+subject
-            if is_advance: 
-                subject='advance '+ subject
-                body='processing of an '+ subject
-                
-        subject=titlecase(subject)
-        context['subject']=subject
-        context['body']=body
-        
-        Paylet.objects.create(
-            transaction=transaction,
-            payee_name= context['payee_name'],
-            reason_for= context['reason'].capitalize(),
-            acc_name= context['acc_name'],
-            acc_number= context['acc_number'],
-            bank= context['bank'],
-            ifsc= context['ifsc'],
-            pan=context['pan'],
-            gstin=context['gstin']
-        )
-        
-        doc=DocxTemplate(template_path)
-        doc.render(context)
-        
-        temp_dir= tempfile.gettempdir()
-        docx_path=os.path.join(temp_dir, f'paylet_{transaction.id}.docx')
-        doc.save(docx_path)
-        
-        """if format_type=='pdf':
-            pdf_path=os.path.join(temp_dir, f'paylet_{transaction.id}.pdf')
+        try: 
+            transaction= self.get_object()
+            data= request.data
+            format_type= request.query_params.get('file_ext', 'docx')
             
-            try:
-                convert(docx_path, pdf_path)
-                with open(pdf_path, 'rb') as pdf:
-                    response = HttpResponse(pdf.read(), content_type='application/pdf')
-                    response['Content-Disposition'] = f'attachment; filename="Paylet_{transaction.title}.pdf"'
-                
-                os.remove(pdf_path)
-                os.remove(docx_path)
-                return response
-                
-            except Exception as e:
-                if os.path.exists(docx_path): 
-                    os.remove(docx_path)
-                if os.path.exists(pdf_path): 
-                    os.remove(pdf_path)
+            template= PayletTemplate.objects.first()
+            if not template:
+                return Response({'error':'no paylet template added. rookie move'}, status=404)
+            
+            template_path=template.file.path
+            
+            is_advance= transaction.subcategory.name.lower() == 'advance'
+            addressee= 'Dean, Administration' if is_advance else 'Associate Dean, SWD'
+            date= timezone.now().strftime("%B %d, %Y")
+            
+            ledger_name= ' '.join(transaction.ledger.name.split('-'))
+            if ledger_name.lower().startswith('apogee'):
+                ledger_name=ledger_name.upper()
+            elif ledger_name.startswith('su'):
+                ledger_name= 'SU'
+            else:
+                ledger_name=ledger_name.capitalize()
+            
+            team=ledger_name.split()[0]
+            if (team=='SU'):
+                team="Students' Union"
+            else:
+                team='Team '+team
+            
+            
+            context={
+                'addressee': addressee,
+                'date': date,
+                'team': team,
+                'payee_name': data.get('payee',''),
+                'reason': data.get('reason', ''),
+                'amount': f"Rs. {transaction.amount:,.2f}",
+                'ledger_name': ledger_name,
+                'acc_name': data.get('accName', ''),
+                'acc_number': data.get('accNo', ''),
+                'bank': data.get('bank', ''),
+                'ifsc': data.get('ifsc', ''),
+                'pan': data.get('pan', ''),
+                'gstin': data.get('gstin', '')
+            }
+            if (transaction.transaction_type.lower()=='revenue' or transaction.subcategory.name.lower()=='prize money'):
+                subject= context['reason']
+                body=subject
+            else:
+                subject=f'payment to {context['payee_name']} for {context['reason']}'
+                body= 'processing of a '+subject
+                if is_advance: 
+                    subject='advance '+ subject
+                    body='processing of an '+ subject
                     
-                return Response({"error": "PDF generation failed"}, status=500)"""
+            subject=titlecase(subject)
+            context['subject']=subject
+            context['body']=body
+            
+            Paylet.objects.create(
+                transaction=transaction,
+                payee_name= context['payee_name'],
+                reason_for= context['reason'].capitalize(),
+                acc_name= context['acc_name'],
+                acc_number= context['acc_number'],
+                bank= context['bank'],
+                ifsc= context['ifsc'],
+                pan=context['pan'],
+                gstin=context['gstin']
+            )
+            
+            doc=DocxTemplate(template_path)
+            doc.render(context)
+            
+            temp_dir= tempfile.gettempdir()
+            docx_path=os.path.join(temp_dir, f'paylet_{transaction.id}.docx')
+            doc.save(docx_path)
+            
+            """if format_type=='pdf':
+                pdf_path=os.path.join(temp_dir, f'paylet_{transaction.id}.pdf')
+                
+                try:
+                    convert(docx_path, pdf_path)
+                    with open(pdf_path, 'rb') as pdf:
+                        response = HttpResponse(pdf.read(), content_type='application/pdf')
+                        response['Content-Disposition'] = f'attachment; filename="Paylet_{transaction.title}.pdf"'
+                    
+                    os.remove(pdf_path)
+                    os.remove(docx_path)
+                    return response
+                    
+                except Exception as e:
+                    if os.path.exists(docx_path): 
+                        os.remove(docx_path)
+                    if os.path.exists(pdf_path): 
+                        os.remove(pdf_path)
+                        
+                    return Response({"error": "PDF generation failed"}, status=500)"""
+            
+            with open(docx_path, 'rb') as docx:
+                response = HttpResponse(docx.read(), content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+                response['Content-Disposition'] = f'attachment; filename="Paylet_{transaction.title}.docx"'
         
-        with open(docx_path, 'rb') as docx:
-            response = HttpResponse(docx.read(), content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-            response['Content-Disposition'] = f'attachment; filename="Paylet_{transaction.title}.docx"'
-    
-        os.remove(docx_path)
-        return response
+            os.remove(docx_path)
+            return response
+        except Exception as e:
+            logger.exception("Paylet generation failed")
+            traceback.print_exc()
+            
+            return Response(
+                {
+                    "error": str(e),
+                    "type": type(e).__name__,
+                    
+                },
+                status=500,
+            )
 
 class VendorViewSet(viewsets.ModelViewSet):
     queryset = Vendor.objects.all()
