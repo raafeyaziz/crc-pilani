@@ -77,6 +77,19 @@ export default function AboutCard({ member,isAdmin=false, onDeleteSuccess=false,
                     </div>
                 </div>
 
+                <div className='flex w-full'>
+                    <div className='w-fit shrink-0'>
+                        <h2 className=' text-3xl md:text-4xl'>
+                            &gt;
+                        </h2>
+
+                        <h2 className=" text-center text-3xl md:text-4xl text-white">
+                            {member.name.toLowerCase()}
+                        </h2>
+                    </div>
+
+                </div>
+
             </div>
 
             {/* Right */}
