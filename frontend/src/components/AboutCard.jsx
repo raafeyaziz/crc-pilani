@@ -48,49 +48,32 @@ export default function AboutCard({ member,isAdmin=false, onDeleteSuccess=false,
         >
 
             {/* Left */}
+<div className="flex flex-col md:flex-row items-center md:items-start font-light gap-5">
 
-            <div className="flex flex-col md:flex-row items-center md:items-start font-light gap-5">
+    <img
+        src={member.avatar || avatarIcon}
+        alt={member.name}
+        className="w-32 h-32 border bg-grey border-white object-cover"
+    />
 
-                <img
-                    src={member.avatar}
-                    alt={member.name}
-                    className=" w-32 h-32 border bg-grey border-white"
-                />
+    <div className="flex items-start justify-center md:justify-start text-center md:text-left">
+    {/* Desktop only: separate > */}
+    <h2 className="hidden md:block text-3xl md:text-4xl">&gt;</h2>
 
-                <div className='flex items'>
-                    <h2 className='text-3xl md:text-4xl'>
-                        &gt;
-                    </h2>
+    <div className="flex flex-col items-center md:items-stretch">
+        <h2 className="text-3xl md:text-4xl text-white">
+            {/* Mobile only: inline > so it centers with the name */}
+            <span className="md:hidden">&gt;</span>
+            {member.name.toLowerCase()}
+        </h2>
 
-                    <div className='flex flex-col items-center md:items-stretch'>
+        <p className={`text-base md:text-xl ${roleColor[member.role]}`}>
+            {member.role}
+        </p>
+    </div>
+</div>
 
-                    <h2 className="text-3xl md:text-4xl text-white">
-                        {member.name.toLowerCase()}
-                    </h2>
-
-                    <p
-                        className={`text-base md:text-xl ${roleColor[member.role]}`}
-                    >
-                        {member.role}
-                    </p>
-
-                    </div>
-                </div>
-
-                <div className='flex w-full'>
-                    <div className='w-fit shrink-0'>
-                        <h2 className=' text-3xl md:text-4xl'>
-                            &gt;
-                        </h2>
-
-                        <h2 className=" text-center text-3xl md:text-4xl text-white">
-                            {member.name.toLowerCase()}
-                        </h2>
-                    </div>
-
-                </div>
-
-            </div>
+</div>
 
             {/* Right */}
 
