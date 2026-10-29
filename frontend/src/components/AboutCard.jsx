@@ -77,7 +77,7 @@ export default function AboutCard({ member,isAdmin=false, onDeleteSuccess=false,
 
             {/* Right */}
 
-            <div className="flex flex-col flex-1 truncate items-end gap-5">
+            <div className="flex flex-col flex-1 truncate md:items-end gap-5">
 
                 <div className="text-grey font-mono text-base md:text-xl flex flex-col items-center md:items-end">
                     {isAdmin && (
@@ -95,7 +95,7 @@ export default function AboutCard({ member,isAdmin=false, onDeleteSuccess=false,
                     </span>
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex gap-3 items-center justify-center">
 
                     <a
                         href={member.instagram}
